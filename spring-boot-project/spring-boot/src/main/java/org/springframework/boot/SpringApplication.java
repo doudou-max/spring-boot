@@ -259,9 +259,12 @@ public class SpringApplication {
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		// 推测 web容器类型，一般都是 SERVLET
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		// 应该是扫描 MET-INFO/spring.factories 初始化一些初始化器
+		// 扫描 META-INF/spring.factories，获取到实例集合 (经过 getSpringFactoriesInstances() 会存到缓存中)
 		this.bootstrapRegistryInitializers = new ArrayList<>(getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
-		// 设置初始化器
+		// 设置初始化器，prepareContext 方法中将会执行每个 initializers 的逻辑
+		// 每一个 initializer 都是一个实现了 ApplicationContextInitializer 接口的实例。
+		// ApplicationContextInitializer 是 Spring IOC 容器中提供的一个接口
+		// 初始化器和监听器会先进行实例化操作，在 refresh() 方法之前实例化
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		// 设置监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));

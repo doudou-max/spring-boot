@@ -241,6 +241,8 @@ public class SpringApplication {
 	}
 
 	/**
+	 * springboot 在程序启动的时候，会先实例化一个 springApplication 对象，再调用 run()
+	 *
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
 	 * documentation for details). The instance can be customized before calling
@@ -255,11 +257,15 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		// 推测 web容器类型，一般都是 SERVLET
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		this.bootstrapRegistryInitializers = new ArrayList<>(
-				getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
+		// 应该是扫描 MET-INFO/spring.factories 初始化一些初始化器
+		this.bootstrapRegistryInitializers = new ArrayList<>(getSpringFactoriesInstances(BootstrapRegistryInitializer.class));
+		// 设置初始化器
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		// 设置监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 推断应用程序启动类型
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -279,6 +285,8 @@ public class SpringApplication {
 	}
 
 	/**
+	 * 再实例化一个 springApplication 对象之后，就开始调用该方法了
+	 *
 	 * Run the Spring application, creating and refreshing a new
 	 * {@link ApplicationContext}.
 	 * @param args the application arguments (usually passed from a Java main method)

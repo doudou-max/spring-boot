@@ -49,7 +49,7 @@ class SpringApplicationRunListeners {
 			ApplicationStartup applicationStartup) {
 		this.log = log;
 		this.listeners = new ArrayList<>(listeners);
-		this.applicationStartup = applicationStartup;
+		this.applicationStartup = applicationStartup;  // ApplicationStartup.DEFAULT
 	}
 
 	void starting(ConfigurableBootstrapContext bootstrapContext, Class<?> mainApplicationClass) {

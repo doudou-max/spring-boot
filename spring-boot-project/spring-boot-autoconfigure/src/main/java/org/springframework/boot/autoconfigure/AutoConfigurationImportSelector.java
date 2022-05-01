@@ -91,6 +91,12 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 
 	private ConfigurationClassFilter configurationClassFilter;
 
+	/**
+	 * 这里是重写 ImportSelector.selectImports()，返回的字符串会注册到 spring 容器中
+	 *
+	 * @param annotationMetadata
+	 * @return
+	 */
 	@Override
 	public String[] selectImports(AnnotationMetadata annotationMetadata) {
 		if (!isEnabled(annotationMetadata)) {
@@ -119,10 +125,10 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		if (!isEnabled(annotationMetadata)) {
 			return EMPTY_ENTRY;
 		}
-		AnnotationAttributes attributes = getAttributes(annotationMetadata);
-		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
-		configurations = removeDuplicates(configurations);
-		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
+		AnnotationAttributes attributes = getAttributes(annotationMetadata);					 	// 获取注解的属性的内容
+		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);		// 获取候选 bean，获取 spring.factories 中定义的bean
+		configurations = removeDuplicates(configurations);											// 去重
+		Set<String> exclusions = getExclusions(annotationMetadata, attributes);						// 去除排除的类
 		checkExcludedClasses(configurations, exclusions);
 		configurations.removeAll(exclusions);
 		configurations = getConfigurationClassFilter().filter(configurations);
@@ -143,6 +149,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	}
 
 	/**
+	 * 获取注解的属性中内容
 	 * Return the appropriate {@link AnnotationAttributes} from the
 	 * {@link AnnotationMetadata}. By default this method will return attributes for
 	 * {@link #getAnnotationClass()}.
@@ -175,14 +182,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 	 * @return a list of candidate configurations
 	 */
 	protected List<String> getCandidateConfigurations(AnnotationMetadata metadata, AnnotationAttributes attributes) {
-		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(),
-				getBeanClassLoader());
+		// getSpringFactoriesLoaderFactoryClass() 获取 EnableAutoConfiguration.class
+		// classLoader 加载 .java 文件的 .class 文件，程序就可以知道是哪一个类了，知道当前类就知道 cache 中的 key 值了
+		// spring factory map: Map<ClassLoader, Map<String, List<String>>> cache = new ConcurrentReferenceHashMap<>();
+		List<String> configurations = SpringFactoriesLoader.loadFactoryNames(getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader());
 		Assert.notEmpty(configurations, "No auto configuration classes found in META-INF/spring.factories. If you "
 				+ "are using a custom packaging, make sure that file is correct.");
 		return configurations;
 	}
 
 	/**
+	 * spring boot 自动装配的注解，加载 bean 的时候做区分
 	 * Return the class used by {@link SpringFactoriesLoader} to load configuration
 	 * candidates.
 	 * @return the factory class

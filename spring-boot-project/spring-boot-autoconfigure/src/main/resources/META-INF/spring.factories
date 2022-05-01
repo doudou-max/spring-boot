@@ -22,6 +22,7 @@ org.springframework.boot.autoconfigure.condition.OnClassCondition,\
 org.springframework.boot.autoconfigure.condition.OnWebApplicationCondition
 
 # Auto Configure
+# 这里是自动装配的，程序启动的时候会自动装配
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration,\
 org.springframework.boot.autoconfigure.aop.AopAutoConfiguration,\

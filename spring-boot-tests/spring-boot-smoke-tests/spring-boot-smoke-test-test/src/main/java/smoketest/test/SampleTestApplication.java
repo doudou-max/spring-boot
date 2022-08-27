@@ -19,6 +19,8 @@ package smoketest.test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.context.ConfigurableApplicationContext;
+import smoketest.test.condition.ConditionalUse;
 
 /**
  * Sample application to demonstrate testing.
@@ -33,7 +35,10 @@ public class SampleTestApplication {
 	// still run.
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleTestApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(SampleTestApplication.class, args);
+		ConditionalUse bean = context.getBean(ConditionalUse.class);
+		System.out.println(bean);
+
 	}
 
 }

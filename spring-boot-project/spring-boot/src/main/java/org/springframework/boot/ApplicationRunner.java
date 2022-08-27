@@ -33,6 +33,7 @@ import org.springframework.core.annotation.Order;
 public interface ApplicationRunner {
 
 	/**
+	 * ApplicationRunner 接收的是 ApplicationArguments 类型的参数，即应用程序启动参数
 	 * Callback used to run the bean.
 	 * @param args incoming application arguments
 	 * @throws Exception on error

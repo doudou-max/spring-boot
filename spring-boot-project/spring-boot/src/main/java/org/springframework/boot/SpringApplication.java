@@ -16,22 +16,8 @@
 
 package org.springframework.boot;
 
-import java.lang.reflect.Constructor;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -61,24 +47,16 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.core.env.CommandLinePropertySource;
-import org.springframework.core.env.CompositePropertySource;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.SimpleCommandLinePropertySource;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.*;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.metrics.ApplicationStartup;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
+
+import java.lang.reflect.Constructor;
+import java.time.Duration;
+import java.util.*;
 
 /**
  * Class that can be used to bootstrap and launch a Spring application from a Java main
@@ -299,6 +277,7 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		// 开始计时
 		long startTime = System.nanoTime();
 		// 初始化器初始化 (在实例化 springApplication 对象的时候，获取到初始化器列表的值给到 bootstrapRegistryInitializers)
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
@@ -311,20 +290,29 @@ public class SpringApplication {
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			// 准备环境变量，和 配置文件相关
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+			// 配置忽略的 bean 信息
 			configureIgnoreBeanInfo(environment);
+			// 打印日志爱
 			Banner printedBanner = printBanner(environment);
+			// 创建 applicationContest
 			context = createApplicationContext();
 			context.setApplicationStartup(this.applicationStartup);
+			// 准备 applicationContext
 			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+			// refresh
 			refreshContext(context);
+			// refresh 后置处理
 			afterRefresh(context, applicationArguments);
+			// 结束计时
 			Duration timeTakeToStartup = Duration.ofNanos(System.nanoTime() - startTime);
 			if (this.logStartupInfo) {
 				new StartupInfoLogger(this.mainApplicationClass).logStarted(getApplicationLog(), timeTakeToStartup);
 			}
 			// 启动结束监听器
 			listeners.started(context, timeTakeToStartup);
+			// 执行 CommandLineRunner ApplicationRunner
 			callRunners(context, applicationArguments);
 		} catch (Throwable ex) {
 			handleRunFailure(context, ex, listeners);
@@ -757,6 +745,13 @@ public class SpringApplication {
 	protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
 	}
 
+	/**
+	 * 获取 ApplicationRunner 和 CommandLineRunner
+	 * 先执行 ApplicationRunner，再执行 CommandLineRunner
+	 *
+	 * @param context
+	 * @param args
+	 */
 	private void callRunners(ApplicationContext context, ApplicationArguments args) {
 		List<Object> runners = new ArrayList<>();
 		runners.addAll(context.getBeansOfType(ApplicationRunner.class).values());

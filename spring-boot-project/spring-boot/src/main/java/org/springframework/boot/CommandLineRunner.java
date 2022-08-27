@@ -36,6 +36,7 @@ import org.springframework.core.annotation.Order;
 public interface CommandLineRunner {
 
 	/**
+	 * CommandLineRunner 接收的是 String 类型的可变参数，它的值就是 main() 函数接收到的命令行参数
 	 * Callback used to run the bean.
 	 * @param args incoming main method arguments
 	 * @throws Exception on error

@@ -748,6 +748,7 @@ public class SpringApplication {
 	/**
 	 * 获取 ApplicationRunner 和 CommandLineRunner
 	 * 先执行 ApplicationRunner，再执行 CommandLineRunner
+	 * 因为 ApplicationRunner 比 CommandLineRunner 先添加到容器
 	 *
 	 * @param context
 	 * @param args

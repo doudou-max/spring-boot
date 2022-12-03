@@ -43,6 +43,8 @@ import org.springframework.data.repository.Repository;
  * annotation that is equivalent to declaring {@code @Configuration},
  * {@code @EnableAutoConfiguration} and {@code @ComponentScan}.
  *
+ * 自动装配：https://blog.csdn.net/Mark2527/article/details/112685040
+ *
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Andy Wilkinson

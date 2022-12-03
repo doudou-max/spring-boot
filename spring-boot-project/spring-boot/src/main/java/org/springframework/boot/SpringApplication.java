@@ -290,7 +290,7 @@ public class SpringApplication {
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			// 准备环境变量，和 配置文件相关
+			// 准备环境变量，和 配置文件相关 (解析springboot的配置文件)
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			// 配置忽略的 bean 信息
 			configureIgnoreBeanInfo(environment);
